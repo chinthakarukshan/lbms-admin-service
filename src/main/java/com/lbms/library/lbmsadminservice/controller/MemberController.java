@@ -5,6 +5,7 @@ import com.lbms.library.lbmsadminservice.dto.MemberRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class MemberController {
     }
 
     @PostMapping
-    public void addMember(@RequestBody MemberRequest memberRequest) {
-
+    public MemberRequest addMember(@Valid @RequestBody MemberRequest memberRequest) {
+        return memberRequest;
     }
 }
