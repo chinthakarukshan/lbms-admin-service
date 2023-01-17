@@ -4,7 +4,7 @@ import com.lbms.library.core.dto.Member;
 import com.lbms.library.lbmsadminservice.dto.MemberRequest;
 import com.lbms.library.lbmsadminservice.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -24,8 +24,8 @@ public class MemberController {
     }
 
     @PostMapping
-    public MemberRequest addMember(@Valid @RequestBody MemberRequest memberRequest) {
+    public ResponseEntity<Object> addMember(@Valid @RequestBody MemberRequest memberRequest) {
         memberService.addMember(memberRequest);
-        return memberRequest;
+        return ResponseEntity.created(null).build();
     }
 }
