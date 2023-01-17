@@ -24,7 +24,7 @@ public class MemberController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> addMember(@Valid @RequestBody MemberRequest memberRequest) {
+    public ResponseEntity addMember(@Valid @RequestBody MemberRequest memberRequest) {
         memberService.addMember(memberRequest);
         return ResponseEntity.created(null).build();
     }
