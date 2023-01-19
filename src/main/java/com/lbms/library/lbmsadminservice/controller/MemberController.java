@@ -3,11 +3,11 @@ package com.lbms.library.lbmsadminservice.controller;
 import com.lbms.library.core.dto.Member;
 import com.lbms.library.lbmsadminservice.dto.MemberRequest;
 import com.lbms.library.lbmsadminservice.service.MemberService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
