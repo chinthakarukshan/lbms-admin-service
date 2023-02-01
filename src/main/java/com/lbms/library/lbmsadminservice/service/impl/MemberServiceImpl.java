@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -20,13 +21,16 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void addMember(MemberRequest memberRequest) {
-        Member member = new Member();
-        member.setUserId("dsdfs");
-        member.setEmail("test@test.com");
-        member.setFirstName("Chinthaka");
-        //member.setDateOfBirth(new Date());
-
         isMemberExist(memberRequest);
+
+        UUID uuid = UUID.randomUUID();
+        String userId = uuid.toString();
+
+        Member member = new Member();
+        member.setEmail(memberRequest.getEmail());
+        member.setFirstName(memberRequest.getFirstName());
+        member.setLastName(memberRequest.getLastName());
+        member.setUserId(userId);
 
         memberRepository.saveAndFlush(member);
     }
