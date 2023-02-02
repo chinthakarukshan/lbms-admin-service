@@ -6,6 +6,8 @@ import com.lbms.library.lbmsadminservice.dto.MemberRequest;
 import com.lbms.library.lbmsadminservice.entity.Member;
 import com.lbms.library.lbmsadminservice.repository.MemberRepository;
 import com.lbms.library.lbmsadminservice.service.MemberService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,8 @@ import java.util.UUID;
 
 @Service
 public class MemberServiceImpl implements MemberService {
+
+    Logger log = LoggerFactory.getLogger(MemberServiceImpl.class);
 
     @Autowired
     MemberRepository memberRepository;
@@ -39,6 +43,7 @@ public class MemberServiceImpl implements MemberService {
         List<Member> memberList = memberRepository.findByEmail(memberRequest.getEmail());
 
         if (!memberList.isEmpty()) {
+            log.info("Member already exists with the email address");
             throw new LBMSException(LBMSError.MEMBER_EXISTS);
         }
     }
