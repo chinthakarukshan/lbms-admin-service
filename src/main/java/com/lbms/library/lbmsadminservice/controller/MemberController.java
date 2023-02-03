@@ -2,6 +2,7 @@ package com.lbms.library.lbmsadminservice.controller;
 
 import com.lbms.library.core.dto.Member;
 import com.lbms.library.lbmsadminservice.dto.MemberRequest;
+import com.lbms.library.lbmsadminservice.dto.MemberSummaryDTO;
 import com.lbms.library.lbmsadminservice.service.MemberService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,8 @@ public class MemberController {
     MemberService memberService;
 
     @GetMapping
-    public List<Member> getMembers() {
-        return new ArrayList<>();
+    public List<MemberSummaryDTO> getMembers() {
+        return memberService.getMembers();
     }
 
     @PostMapping
