@@ -46,7 +46,9 @@ public class MemberServiceImpl implements MemberService {
     public List<MemberSummaryDTO> getMembers() {
         ModelMapper mapper = new ModelMapper();
         List<Member> memberList = memberRepository.findAll();
-        List<MemberSummaryDTO> memberSummaryList = memberList.stream().map(member -> mapper.map(member, MemberSummaryDTO.class)).collect(Collectors.toList());
+        List<MemberSummaryDTO> memberSummaryList = memberList.stream()
+                                                             .map(member -> mapper.map(member, MemberSummaryDTO.class))
+                                                             .collect(Collectors.toList());
         return memberSummaryList;
     }
 
