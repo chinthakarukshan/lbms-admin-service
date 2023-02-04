@@ -1,6 +1,7 @@
 package com.lbms.library.lbmsadminservice.service;
 
 
+import com.lbms.library.lbmsadminservice.dto.MemberDTO;
 import com.lbms.library.lbmsadminservice.dto.MemberRequest;
 import com.lbms.library.lbmsadminservice.dto.MemberSummaryDTO;
 import com.lbms.library.lbmsadminservice.entity.Member;
@@ -12,4 +13,6 @@ public interface MemberService {
     void addMember(MemberRequest memberRequest);
 
     List<MemberSummaryDTO> getMembers();
+
+    MemberDTO getMemberbyUserId(String userId);
 }

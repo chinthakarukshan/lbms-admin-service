@@ -1,6 +1,7 @@
 package com.lbms.library.lbmsadminservice.controller;
 
 import com.lbms.library.core.dto.Member;
+import com.lbms.library.lbmsadminservice.dto.MemberDTO;
 import com.lbms.library.lbmsadminservice.dto.MemberRequest;
 import com.lbms.library.lbmsadminservice.dto.MemberSummaryDTO;
 import com.lbms.library.lbmsadminservice.service.MemberService;
@@ -22,6 +23,11 @@ public class MemberController {
     @GetMapping
     public List<MemberSummaryDTO> getMembers() {
         return memberService.getMembers();
+    }
+
+    @GetMapping("/{userId}")
+    public MemberDTO getMemberByID(@PathVariable String userId) {
+        return memberService.getMemberbyUserId(userId);
     }
 
     @PostMapping

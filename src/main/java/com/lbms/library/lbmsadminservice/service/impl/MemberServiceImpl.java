@@ -2,6 +2,7 @@ package com.lbms.library.lbmsadminservice.service.impl;
 
 import com.lbms.library.core.error.LBMSError;
 import com.lbms.library.core.exception.LBMSException;
+import com.lbms.library.lbmsadminservice.dto.MemberDTO;
 import com.lbms.library.lbmsadminservice.dto.MemberRequest;
 import com.lbms.library.lbmsadminservice.dto.MemberSummaryDTO;
 import com.lbms.library.lbmsadminservice.entity.Member;
@@ -50,6 +51,22 @@ public class MemberServiceImpl implements MemberService {
                                                              .map(member -> mapper.map(member, MemberSummaryDTO.class))
                                                              .collect(Collectors.toList());
         return memberSummaryList;
+    }
+
+    @Override
+    public MemberDTO getMemberbyUserId(String userId) {
+        List<Member> memberList = memberRepository.findByUserId(userId);
+        ModelMapper mapper = new ModelMapper();
+
+        if (memberList.isEmpty()) {
+            log.info("Member with the user id doesn't exist in the system");
+            throw new LBMSException(LBMSError.MEMBER_DOES_NOT_EXIST);
+        }
+
+        Member member = memberList.get(0);
+        MemberDTO memberDTO = mapper.map(member,MemberDTO.class);
+
+        return memberDTO;
     }
 
     private void isMemberExist(MemberRequest memberRequest) {
