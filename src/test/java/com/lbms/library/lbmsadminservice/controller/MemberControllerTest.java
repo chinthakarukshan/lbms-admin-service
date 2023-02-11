@@ -1,6 +1,9 @@
 package com.lbms.library.lbmsadminservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lbms.library.core.error.LBMSError;
+import com.lbms.library.core.exception.LBMSException;
+import com.lbms.library.lbmsadminservice.dto.MemberDTO;
 import com.lbms.library.lbmsadminservice.dto.MemberRequest;
 import com.lbms.library.lbmsadminservice.dto.MemberSummaryDTO;
 import com.lbms.library.lbmsadminservice.service.MemberService;
@@ -141,5 +144,30 @@ public class MemberControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().string(containsString("UUID-01")));
+    }
+
+    @Test
+    public void getMemberById_success() throws Exception {
+        MemberDTO memberDTO = new MemberDTO();
+        memberDTO.setUserId("USERID-01");
+        memberDTO.setEmail("user01@org.com");
+        memberDTO.setFirstName("First Name");
+        memberDTO.setLastName("Last Name");
+
+        when(memberService.getMemberbyUserId("USERID-01")).thenReturn(memberDTO);
+
+        this.mockMVC.perform(get("/members/USERID-01"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().string(containsString("user01@org.com")));
+    }
+
+    @Test
+    public void getMemberById_invalidUserId() throws Exception {
+        when(memberService.getMemberbyUserId("USERID-02")).thenThrow(new LBMSException(LBMSError.MEMBER_DOES_NOT_EXIST));
+
+        this.mockMVC.perform(get("/members/USERID-02"))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(content().string(containsString("LBMSVAL0002")))
+                    .andExpect(content().string(containsString("A member with the user id does not exist")));
     }
 }
