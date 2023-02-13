@@ -40,7 +40,7 @@ public class MemberServiceImpl implements MemberService {
         member.setLastName(memberRequest.getLastName());
         member.setUserId(userId);
 
-        memberRepository.saveAndFlush(member);
+        memberRepository.save(member);
     }
 
     @Override
