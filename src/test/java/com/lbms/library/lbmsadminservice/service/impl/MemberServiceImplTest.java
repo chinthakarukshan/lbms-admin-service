@@ -1,6 +1,8 @@
 package com.lbms.library.lbmsadminservice.service.impl;
 
+import com.lbms.library.core.error.LBMSError;
 import com.lbms.library.core.exception.LBMSException;
+import com.lbms.library.lbmsadminservice.dto.MemberDTO;
 import com.lbms.library.lbmsadminservice.dto.MemberRequest;
 import com.lbms.library.lbmsadminservice.entity.Member;
 import com.lbms.library.lbmsadminservice.repository.MemberRepository;
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,5 +69,29 @@ public class MemberServiceImplTest {
         assertThrows(LBMSException.class, () -> {memberService.addMember(memberRequest);});
 
         verify(memberRepository,times(0)).save(any(Member.class));
+    }
+
+    @Test
+    public void getMemberbyUserId_Success() {
+        List<Member> memberList = new ArrayList<>();
+        memberList.add(member);
+        when(memberRepository.findByUserId(any(String.class))).thenReturn(memberList);
+
+        MemberDTO memberDTO = memberService.getMemberbyUserId("USER-01");
+
+        assert(memberDTO.getUserId().equals(member.getUserId()));
+
+    }
+
+    @Test
+    public void getMemberbyUserId_userNotExist() {
+        List<Member> memberList = new ArrayList<>();
+        when(memberRepository.findByUserId(any(String.class))).thenReturn(memberList);
+
+        LBMSException lbmsException = assertThrows(LBMSException.class, () -> {
+            memberService.getMemberbyUserId("USER-01");
+        });
+
+        assert(lbmsException.getThrowableError().equals(LBMSError.MEMBER_DOES_NOT_EXIST));
     }
 }
