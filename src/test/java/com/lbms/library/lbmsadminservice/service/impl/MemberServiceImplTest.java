@@ -4,6 +4,7 @@ import com.lbms.library.core.error.LBMSError;
 import com.lbms.library.core.exception.LBMSException;
 import com.lbms.library.lbmsadminservice.dto.MemberDTO;
 import com.lbms.library.lbmsadminservice.dto.MemberRequest;
+import com.lbms.library.lbmsadminservice.dto.MemberSummaryDTO;
 import com.lbms.library.lbmsadminservice.entity.Member;
 import com.lbms.library.lbmsadminservice.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,11 +13,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -31,6 +34,8 @@ public class MemberServiceImplTest {
     private MemberServiceImpl memberService;
 
     private Member member;
+    private Member member2;
+    private Member member3;
 
     private MemberRequest memberRequest;
 
@@ -41,6 +46,18 @@ public class MemberServiceImplTest {
         member.setEmail("member01@library.com");
         member.setFirstName("Member First Name");
         member.setLastName("Member Last Name");
+
+        member2 = new Member();
+        member2.setUserId("USER-02");
+        member2.setEmail("member02@library.com");
+        member2.setFirstName("Member2 First Name");
+        member2.setLastName("Member2 Last Name");
+
+        member3 = new Member();
+        member3.setUserId("USER-03");
+        member3.setEmail("member03@library.com");
+        member3.setFirstName("Member3 First Name");
+        member3.setLastName("Member3 Last Name");
 
         memberRequest = new MemberRequest();
         memberRequest.setDateOfBirth(new Date());
@@ -93,5 +110,24 @@ public class MemberServiceImplTest {
         });
 
         assert(lbmsException.getThrowableError().equals(LBMSError.MEMBER_DOES_NOT_EXIST));
+    }
+
+    @Test
+    public void getMembers_success() {
+        ModelMapper mapper = new ModelMapper();
+        List<Member> memberList = new ArrayList<>();
+        memberList.add(member);
+        memberList.add(member2);
+        memberList.add(member3);
+
+        List<MemberSummaryDTO> expectedMemberSummaryDTOList = memberList.stream().map(member -> mapper.map(member,MemberSummaryDTO.class)).collect(Collectors.toList());
+
+        when(memberRepository.findAll()).thenReturn(memberList);
+
+        List<MemberSummaryDTO> returnedMmemberSummaryDTOList = memberService.getMembers();
+
+        assert(expectedMemberSummaryDTOList.size() == returnedMmemberSummaryDTOList.size());
+        assert(expectedMemberSummaryDTOList.get(0).getUserId().equals(returnedMmemberSummaryDTOList.get(0).getUserId()));
+
     }
 }
