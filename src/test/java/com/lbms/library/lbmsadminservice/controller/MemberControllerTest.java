@@ -1,12 +1,16 @@
 package com.lbms.library.lbmsadminservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lbms.library.core.error.LBMSError;
 import com.lbms.library.core.exception.LBMSException;
 import com.lbms.library.lbmsadminservice.dto.MemberDTO;
 import com.lbms.library.lbmsadminservice.dto.MemberRequest;
 import com.lbms.library.lbmsadminservice.dto.MemberSummaryDTO;
+import com.lbms.library.lbmsadminservice.dto.MemberUpdateRequest;
+import com.lbms.library.lbmsadminservice.entity.Member;
 import com.lbms.library.lbmsadminservice.service.MemberService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,8 +24,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,6 +35,18 @@ public class MemberControllerTest {
     MemberService memberService;
     @Autowired
     private MockMvc mockMVC;
+
+    Member member;
+
+    @BeforeEach
+    public void setup() {
+        member = new Member();
+        member.setId(1);
+        member.setUserId("USER-01");
+        member.setEmail("test@org.com");
+        member.setFirstName("First name");
+        member.setLastName("Last name");
+    }
 
     @Test
     public void addMemberTest_success() throws Exception {
@@ -169,5 +184,21 @@ public class MemberControllerTest {
                     .andExpect(status().isBadRequest())
                     .andExpect(content().string(containsString("LBMSVAL0002")))
                     .andExpect(content().string(containsString("A member with the user id does not exist")));
+    }
+
+    @Test
+    public void updateMember_success() throws Exception {
+        MemberUpdateRequest memberUpdateRequestSuccess = new MemberUpdateRequest();
+        memberUpdateRequestSuccess.setEmail("test@org.com");
+        memberUpdateRequestSuccess.setFirstName("first Name");
+        memberUpdateRequestSuccess.setLastName("last name");
+        memberUpdateRequestSuccess.setDateOfBirth(new Date());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(memberUpdateRequestSuccess);
+
+        this.mockMVC.perform(patch("/members/USER-01").contentType(MediaType.APPLICATION_JSON)
+                                                      .content(json))
+                    .andExpect(status().isOk());
     }
 }
