@@ -38,7 +38,7 @@ public class MemberController {
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity updateMember(@PathVariable String userId, @RequestBody MemberUpdateRequest memberUpdateRequest) {
+    public ResponseEntity updateMember(@PathVariable String userId, @Valid @RequestBody MemberUpdateRequest memberUpdateRequest) {
         memberService.updateMember(userId,memberUpdateRequest);
         return ResponseEntity.ok().build();
     }
