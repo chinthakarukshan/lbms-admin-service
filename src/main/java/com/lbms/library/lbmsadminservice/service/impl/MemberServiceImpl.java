@@ -5,6 +5,7 @@ import com.lbms.library.core.exception.LBMSException;
 import com.lbms.library.lbmsadminservice.dto.MemberDTO;
 import com.lbms.library.lbmsadminservice.dto.MemberRequest;
 import com.lbms.library.lbmsadminservice.dto.MemberSummaryDTO;
+import com.lbms.library.lbmsadminservice.dto.MemberUpdateRequest;
 import com.lbms.library.lbmsadminservice.entity.Member;
 import com.lbms.library.lbmsadminservice.repository.MemberRepository;
 import com.lbms.library.lbmsadminservice.service.MemberService;
@@ -69,12 +70,42 @@ public class MemberServiceImpl implements MemberService {
         return memberDTO;
     }
 
+    @Override
+    public void updateMember(String userId, MemberUpdateRequest memberUpdateRequest) {
+        Member member = getMember(userId);
+        validateEmail(member,memberUpdateRequest);
+
+        member.setFirstName(memberUpdateRequest.getFirstName());
+        member.setLastName(memberUpdateRequest.getLastName());
+
+        memberRepository.save(member);
+
+    }
+
     private void isMemberExist(MemberRequest memberRequest) {
         List<Member> memberList = memberRepository.findByEmail(memberRequest.getEmail());
 
         if (!memberList.isEmpty()) {
             log.info("Member already exists with the email address");
             throw new LBMSException(LBMSError.MEMBER_EXISTS);
+        }
+    }
+
+    private Member getMember(String userId) {
+        List<Member> memberList = memberRepository.findByUserId(userId);
+
+        if (memberList.isEmpty()) {
+            log.info("Member doesn't exist in the system");
+            throw new LBMSException(LBMSError.INVALID_MEMBER_TO_UPDATE);
+        }
+
+        return memberList.get(0);
+    }
+
+    private void validateEmail(Member member, MemberUpdateRequest memberUpdateRequest) {
+        if (!member.getEmail().equals(memberUpdateRequest.getEmail())) {
+            log.error("Email address change is not allowed. " + member.getUserId());
+            throw new LBMSException(LBMSError.EMAIL_CANNOT_BE_UPDATED);
         }
     }
 }

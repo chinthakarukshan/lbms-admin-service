@@ -4,6 +4,7 @@ import com.lbms.library.core.dto.Member;
 import com.lbms.library.lbmsadminservice.dto.MemberDTO;
 import com.lbms.library.lbmsadminservice.dto.MemberRequest;
 import com.lbms.library.lbmsadminservice.dto.MemberSummaryDTO;
+import com.lbms.library.lbmsadminservice.dto.MemberUpdateRequest;
 import com.lbms.library.lbmsadminservice.service.MemberService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +35,11 @@ public class MemberController {
     public ResponseEntity addMember(@Valid @RequestBody MemberRequest memberRequest) {
         memberService.addMember(memberRequest);
         return ResponseEntity.created(null).build();
+    }
+
+    @PatchMapping("/{userId}")
+    public ResponseEntity updateMember(@PathVariable String userId, @RequestBody MemberUpdateRequest memberUpdateRequest) {
+        memberService.updateMember(userId,memberUpdateRequest);
+        return ResponseEntity.ok().build();
     }
 }
