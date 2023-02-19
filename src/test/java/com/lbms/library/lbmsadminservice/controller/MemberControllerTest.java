@@ -12,6 +12,7 @@ import com.lbms.library.lbmsadminservice.entity.Member;
 import com.lbms.library.lbmsadminservice.service.MemberService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -23,6 +24,8 @@ import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -38,6 +41,8 @@ public class MemberControllerTest {
 
     Member member;
 
+    MemberUpdateRequest memberUpdateRequest;
+
     @BeforeEach
     public void setup() {
         member = new Member();
@@ -46,6 +51,12 @@ public class MemberControllerTest {
         member.setEmail("test@org.com");
         member.setFirstName("First name");
         member.setLastName("Last name");
+
+        memberUpdateRequest = new MemberUpdateRequest();
+        memberUpdateRequest.setEmail("test@org.com");
+        memberUpdateRequest.setFirstName("first Name");
+        memberUpdateRequest.setLastName("last name");
+        memberUpdateRequest.setDateOfBirth(new Date());
     }
 
     @Test
@@ -200,5 +211,21 @@ public class MemberControllerTest {
         this.mockMVC.perform(patch("/members/USER-01").contentType(MediaType.APPLICATION_JSON)
                                                       .content(json))
                     .andExpect(status().isOk());
+    }
+
+    @Test
+    public void updateMember_invalidUser() throws Exception {
+         doThrow(new LBMSException(LBMSError.INVALID_MEMBER_TO_UPDATE))
+               .when(memberService)
+               .updateMember(any(), any());
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(memberUpdateRequest);
+
+        this.mockMVC.perform(patch("/members/USER-01").contentType(MediaType.APPLICATION_JSON)
+                                                      .content(json))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(content().string(containsString(LBMSError.INVALID_MEMBER_TO_UPDATE.getCode())));
     }
 }
