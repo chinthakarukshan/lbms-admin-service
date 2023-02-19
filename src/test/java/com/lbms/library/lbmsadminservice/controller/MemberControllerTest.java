@@ -228,4 +228,43 @@ public class MemberControllerTest {
                     .andExpect(status().isBadRequest())
                     .andExpect(content().string(containsString(LBMSError.INVALID_MEMBER_TO_UPDATE.getCode())));
     }
+
+    @Test
+    public void updateMember_firstnameEmpty() throws Exception {
+        memberUpdateRequest.setFirstName(null);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(memberUpdateRequest);
+
+        this.mockMVC.perform(patch("/members/USER-01").contentType(MediaType.APPLICATION_JSON)
+                                                      .content(json))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(content().string(containsString("First Name is Required")));
+    }
+
+    @Test
+    public void updateMember_lastnameEmpty() throws Exception {
+        memberUpdateRequest.setLastName(null);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(memberUpdateRequest);
+
+        this.mockMVC.perform(patch("/members/USER-01").contentType(MediaType.APPLICATION_JSON)
+                                                      .content(json))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(content().string(containsString("Last Name is Required")));
+    }
+
+    @Test
+    public void updateMember_dobEmpty() throws Exception {
+        memberUpdateRequest.setDateOfBirth(null);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = objectMapper.writeValueAsString(memberUpdateRequest);
+
+        this.mockMVC.perform(patch("/members/USER-01").contentType(MediaType.APPLICATION_JSON)
+                                                      .content(json))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(content().string(containsString("Date of Birth is Required")));
+    }
 }
