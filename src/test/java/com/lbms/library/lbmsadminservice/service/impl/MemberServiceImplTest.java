@@ -5,6 +5,7 @@ import com.lbms.library.core.exception.LBMSException;
 import com.lbms.library.lbmsadminservice.dto.MemberDTO;
 import com.lbms.library.lbmsadminservice.dto.MemberRequest;
 import com.lbms.library.lbmsadminservice.dto.MemberSummaryDTO;
+import com.lbms.library.lbmsadminservice.dto.MemberUpdateRequest;
 import com.lbms.library.lbmsadminservice.entity.Member;
 import com.lbms.library.lbmsadminservice.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +40,8 @@ public class MemberServiceImplTest {
 
     private MemberRequest memberRequest;
 
+    private MemberUpdateRequest memberUpdateRequest;
+
     @BeforeEach
     public void setup() {
         member = new Member();
@@ -64,6 +67,12 @@ public class MemberServiceImplTest {
         memberRequest.setEmail("member01@library.com");
         memberRequest.setFirstName("Member First Name");
         memberRequest.setLastName("Member Last Name");
+
+        memberUpdateRequest = new MemberUpdateRequest();
+        memberUpdateRequest.setEmail("member01@library.com");
+        memberUpdateRequest.setFirstName("first Name");
+        memberUpdateRequest.setLastName("last name");
+        memberUpdateRequest.setDateOfBirth(new Date());
     }
 
     @Test
@@ -129,5 +138,46 @@ public class MemberServiceImplTest {
         assert(expectedMemberSummaryDTOList.size() == returnedMmemberSummaryDTOList.size());
         assert(expectedMemberSummaryDTOList.get(0).getUserId().equals(returnedMmemberSummaryDTOList.get(0).getUserId()));
 
+    }
+
+    @Test
+    public void updateMember_success() {
+        List<Member> memberList = new ArrayList<>();
+        memberList.add(member);
+        when(memberRepository.findByUserId("USER-01")).thenReturn(memberList);
+
+        memberService.updateMember("USER-01", memberUpdateRequest);
+
+        verify(memberRepository, times(1)).save(any(Member.class));
+    }
+
+    @Test
+    public void updateMember_memberNotExist() {
+        List<Member> memberList = new ArrayList<>();
+
+        when(memberRepository.findByUserId("USER-02")).thenReturn(memberList);
+
+        LBMSException lbmsException = assertThrows(LBMSException.class, () -> {
+            memberService.updateMember("USER-02", memberUpdateRequest);
+        });
+
+        assert (lbmsException.getThrowableError()
+                             .equals(LBMSError.INVALID_MEMBER_TO_UPDATE));
+    }
+
+    @Test
+    public void updateMember_emailChangeAttempt() {
+        List<Member> memberList = new ArrayList<>();
+        member.setEmail("updated@library.com");
+        memberList.add(member);
+
+        when(memberRepository.findByUserId("USER-02")).thenReturn(memberList);
+
+        LBMSException lbmsException = assertThrows(LBMSException.class, () -> {
+            memberService.updateMember("USER-02", memberUpdateRequest);
+        });
+
+        assert (lbmsException.getThrowableError()
+                             .equals(LBMSError.EMAIL_CANNOT_BE_UPDATED));
     }
 }
