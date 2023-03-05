@@ -5,7 +5,6 @@ import com.lbms.library.lbmsadminservice.dto.MemberDTO;
 import com.lbms.library.lbmsadminservice.dto.MemberRequest;
 import com.lbms.library.lbmsadminservice.dto.MemberSummaryDTO;
 import com.lbms.library.lbmsadminservice.dto.MemberUpdateRequest;
-import com.lbms.library.lbmsadminservice.entity.Member;
 
 import java.util.List;
 

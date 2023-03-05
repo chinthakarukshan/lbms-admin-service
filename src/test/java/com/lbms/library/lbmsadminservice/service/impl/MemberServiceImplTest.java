@@ -6,8 +6,8 @@ import com.lbms.library.lbmsadminservice.dto.MemberDTO;
 import com.lbms.library.lbmsadminservice.dto.MemberRequest;
 import com.lbms.library.lbmsadminservice.dto.MemberSummaryDTO;
 import com.lbms.library.lbmsadminservice.dto.MemberUpdateRequest;
-import com.lbms.library.lbmsadminservice.entity.Member;
-import com.lbms.library.lbmsadminservice.repository.MemberRepository;
+import com.lbms.library.lbmsadminservice.entity.jdbc.Member;
+import com.lbms.library.lbmsadminservice.repository.jpa.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Date;

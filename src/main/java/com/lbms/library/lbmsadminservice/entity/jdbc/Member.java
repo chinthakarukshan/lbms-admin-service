@@ -1,4 +1,4 @@
-package com.lbms.library.lbmsadminservice.entity;
+package com.lbms.library.lbmsadminservice.entity.jdbc;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
