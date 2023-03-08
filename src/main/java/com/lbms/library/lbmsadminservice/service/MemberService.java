@@ -1,9 +1,9 @@
 package com.lbms.library.lbmsadminservice.service;
 
 
-import com.lbms.library.lbmsadminservice.dto.MemberDTO;
+import com.lbms.library.core.dto.member.MemberDTO;
+import com.lbms.library.core.dto.member.MemberSummaryDTO;
 import com.lbms.library.lbmsadminservice.dto.MemberRequest;
-import com.lbms.library.lbmsadminservice.dto.MemberSummaryDTO;
 import com.lbms.library.lbmsadminservice.dto.MemberUpdateRequest;
 
 import java.util.List;

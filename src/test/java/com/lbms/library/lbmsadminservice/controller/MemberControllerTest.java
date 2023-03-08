@@ -1,11 +1,11 @@
 package com.lbms.library.lbmsadminservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lbms.library.core.dto.member.MemberDTO;
+import com.lbms.library.core.dto.member.MemberSummaryDTO;
 import com.lbms.library.core.error.LBMSError;
 import com.lbms.library.core.exception.LBMSException;
-import com.lbms.library.lbmsadminservice.dto.MemberDTO;
 import com.lbms.library.lbmsadminservice.dto.MemberRequest;
-import com.lbms.library.lbmsadminservice.dto.MemberSummaryDTO;
 import com.lbms.library.lbmsadminservice.dto.MemberUpdateRequest;
 import com.lbms.library.lbmsadminservice.entity.jdbc.Member;
 import com.lbms.library.lbmsadminservice.service.MemberService;
