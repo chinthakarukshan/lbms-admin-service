@@ -1,5 +1,7 @@
 package com.lbms.library.lbmsadminservice.service.impl;
 
+import com.lbms.library.core.dto.category.CategorySummaryDTO;
+import com.lbms.library.core.dto.member.MemberSummaryDTO;
 import com.lbms.library.core.error.LBMSError;
 import com.lbms.library.core.exception.LBMSException;
 import com.lbms.library.lbmsadminservice.dto.CategoryCreateRequest;
@@ -32,6 +34,22 @@ public class CategoryServiceImpl implements CategoryService {
         category.setActive(true);
 
         categoryRepository.save(category);
+    }
+
+    @Override
+    public List<CategorySummaryDTO> getCategoryList() {
+        List<Category> categoryList = categoryRepository.findAll();
+        List<Category> activeCategoryList = categoryList.stream()
+                                                        .filter(category -> category.isActive())
+                                                        .collect(Collectors.toList());
+
+        ModelMapper modelMapper = new ModelMapper();
+
+        List<CategorySummaryDTO> categorySummaryDTOList = activeCategoryList.stream()
+                                                                            .map(category -> modelMapper.map(category, CategorySummaryDTO.class))
+                                                                            .collect(Collectors.toList());
+
+        return categorySummaryDTOList;
     }
 
     private void checkCategoryExists(String category) {
