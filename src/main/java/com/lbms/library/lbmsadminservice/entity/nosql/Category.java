@@ -22,7 +22,7 @@ public class Category {
 
     private String description;
 
-    private boolean active;
+    private String status;
 
     private Date createdDate;
 
