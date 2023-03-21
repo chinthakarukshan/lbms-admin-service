@@ -2,6 +2,7 @@ package com.lbms.library.lbmsadminservice.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lbms.library.core.dto.category.CategorySummaryDTO;
 import com.lbms.library.core.error.LBMSError;
 import com.lbms.library.core.exception.LBMSException;
 import com.lbms.library.lbmsadminservice.dto.CategoryCreateRequest;
@@ -14,11 +15,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -76,5 +82,38 @@ public class CategoryControllerTest {
                                               .content(categoryCreateRequestJson))
                     .andExpect(status().isBadRequest())
                     .andExpect(content().string(containsString(LBMSError.CATEGORY_EXISTS.getCode())));
+    }
+
+    @Test
+    public void getCategoryList_Success() throws Exception {
+        List<CategorySummaryDTO> responseList = new ArrayList<>();
+
+        CategorySummaryDTO categorySummaryDTO01 = new CategorySummaryDTO();
+        categorySummaryDTO01.setCategory("Novel");
+        categorySummaryDTO01.setId("01");
+        categorySummaryDTO01.setCreatedBy("Admin");
+        categorySummaryDTO01.setCreatedDate(new Date());
+
+        CategorySummaryDTO categorySummaryDTO02 = new CategorySummaryDTO();
+        categorySummaryDTO02.setCategory("Science Fiction");
+        categorySummaryDTO02.setId("02");
+        categorySummaryDTO02.setCreatedBy("Admin");
+        categorySummaryDTO02.setCreatedDate(new Date());
+
+        CategorySummaryDTO categorySummaryDTO03 = new CategorySummaryDTO();
+        categorySummaryDTO03.setCategory("Academic");
+        categorySummaryDTO03.setId("03");
+        categorySummaryDTO03.setCreatedBy("Admin");
+        categorySummaryDTO03.setCreatedDate(new Date());
+
+        responseList.add(categorySummaryDTO01);
+        responseList.add(categorySummaryDTO02);
+        responseList.add(categorySummaryDTO03);
+
+        when(categoryService.getCategoryList()).thenReturn(responseList);
+
+        mockMvc.perform(get("/category"))
+               .andExpect(status().isOk())
+               .andExpect(content().string(containsString("Novel")));
     }
 }
