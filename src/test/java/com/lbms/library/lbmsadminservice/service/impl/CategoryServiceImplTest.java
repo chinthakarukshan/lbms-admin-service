@@ -1,5 +1,6 @@
 package com.lbms.library.lbmsadminservice.service.impl;
 
+import com.lbms.library.core.dto.category.CategorySummaryDTO;
 import com.lbms.library.core.exception.LBMSException;
 import com.lbms.library.core.util.constant.CategoryStatus;
 import com.lbms.library.lbmsadminservice.dto.CategoryCreateRequest;
@@ -35,6 +36,10 @@ public class CategoryServiceImplTest {
 
     Category category;
 
+    Category category2;
+
+    Category category3;
+
     @BeforeEach
     public void setup() {
         categoryCreateRequest = new CategoryCreateRequest();
@@ -47,6 +52,20 @@ public class CategoryServiceImplTest {
         category.setStatus(CategoryStatus.ACTIVE.getStatus());
         category.setCreatedBy("Admin");
         category.setCreatedDate(new Date());
+
+        category2 = new Category();
+        category2.setCategory("Science Fiction");
+        category2.setDescription("Science Fiction Category");
+        category2.setStatus(CategoryStatus.ACTIVE.getStatus());
+        category2.setCreatedBy("Admin");
+        category2.setCreatedDate(new Date());
+
+        category3 = new Category();
+        category3.setCategory("Education");
+        category3.setDescription("Education Category");
+        category3.setStatus(CategoryStatus.ACTIVE.getStatus());
+        category3.setCreatedBy("Admin");
+        category3.setCreatedDate(new Date());
     }
 
     @Test
@@ -71,5 +90,19 @@ public class CategoryServiceImplTest {
         when(categoryRepository.findByCategory(any(String.class))).thenReturn(existingCategoryList);
 
         assertThrows(LBMSException.class, () -> categoryServiceImpl.addCategory(categoryCreateRequest));
+    }
+
+    @Test
+    public void getCategoryList_success() {
+        List<Category> categoryList = new ArrayList<>();
+        categoryList.add(category);
+        categoryList.add(category2);
+        categoryList.add(category3);
+
+        when(categoryRepository.findAll()).thenReturn(categoryList);
+
+        List<CategorySummaryDTO> categorySummaryDTOList = categoryServiceImpl.getCategoryList();
+
+        assert(categorySummaryDTOList.size() == 3);
     }
 }
