@@ -1,5 +1,6 @@
 package com.lbms.library.lbmsadminservice.service.impl;
 
+import com.lbms.library.core.exception.LBMSException;
 import com.lbms.library.core.util.constant.CategoryStatus;
 import com.lbms.library.lbmsadminservice.dto.CategoryCreateRequest;
 import com.lbms.library.lbmsadminservice.entity.nosql.Category;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,14 +50,26 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    public void addCategoryTest_success() {
-        List<Category> existingCategoryList= new ArrayList<>();
-
-        when(categoryRepository.findByCategory("Novel")).thenReturn(existingCategoryList);
-        when(categoryRepository.save(any(Category.class))).thenReturn(category);
-
+    public void addCategoryTest_save_success() {
         categoryServiceImpl.addCategory(categoryCreateRequest);
 
         verify(categoryRepository,times(1)).save(any(Category.class));
+    }
+
+    @Test
+    public void addCategoryTest_findExsisting_success() {
+        categoryServiceImpl.addCategory(categoryCreateRequest);
+
+        verify(categoryRepository,times(1)).findByCategory(any(String.class));
+    }
+
+    @Test
+    public void addCategoryTest_failure_categoryExists() {
+        List<Category> existingCategoryList= new ArrayList<>();
+        existingCategoryList.add(category);
+
+        when(categoryRepository.findByCategory(any(String.class))).thenReturn(existingCategoryList);
+
+        assertThrows(LBMSException.class, () -> categoryServiceImpl.addCategory(categoryCreateRequest));
     }
 }
