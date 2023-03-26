@@ -1,7 +1,7 @@
 package com.lbms.library.lbmsadminservice.service.impl;
 
+import com.lbms.library.core.dto.category.CategoryDTO;
 import com.lbms.library.core.dto.category.CategorySummaryDTO;
-import com.lbms.library.core.dto.member.MemberSummaryDTO;
 import com.lbms.library.core.error.LBMSError;
 import com.lbms.library.core.exception.LBMSException;
 import com.lbms.library.core.util.constant.CategoryStatus;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,6 +51,24 @@ public class CategoryServiceImpl implements CategoryService {
                                                                             .collect(Collectors.toList());
 
         return categorySummaryDTOList;
+    }
+
+    @Override
+    public CategoryDTO getCategoryById(String categoryId) {
+        Optional<Category> categoryOptional = categoryRepository.findById(categoryId);
+        ModelMapper modelMapper = new ModelMapper();
+
+        if (categoryOptional.isEmpty()) {
+            throw new LBMSException(LBMSError.CATEGORY_WITH_ID_DOES_NOT_EXIST);
+        } else {
+            Category category = categoryOptional.get();
+            CategoryDTO categoryDTO;
+
+            categoryDTO = modelMapper.map(category,CategoryDTO.class);
+
+            return categoryDTO;
+        }
+
     }
 
     private void checkCategoryExists(String category) {
