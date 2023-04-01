@@ -6,6 +6,7 @@ import com.lbms.library.core.error.LBMSError;
 import com.lbms.library.core.exception.LBMSException;
 import com.lbms.library.core.util.constant.CategoryStatus;
 import com.lbms.library.lbmsadminservice.dto.CategoryCreateRequest;
+import com.lbms.library.lbmsadminservice.dto.CategoryPatchRequest;
 import com.lbms.library.lbmsadminservice.entity.nosql.Category;
 import com.lbms.library.lbmsadminservice.repository.mongodb.CategoryRepository;
 import com.lbms.library.lbmsadminservice.service.CategoryService;
@@ -13,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -71,6 +73,18 @@ public class CategoryServiceImpl implements CategoryService {
 
     }
 
+    @Override
+    public void patchCategory(String categoryId, CategoryPatchRequest categoryPatchRequest) {
+        checkCategoryExists(categoryId);
+        validateStatus(categoryPatchRequest);
+
+        Category category = categoryRepository.findById(categoryId).get();
+
+        category.setStatus(categoryPatchRequest.getStatus());
+
+        categoryRepository.save(category);
+    }
+
     private void checkCategoryExists(String category) {
         List<Category> existingCategoryList = categoryRepository.findByCategory(category);
         List<Category> activeCategory = existingCategoryList.stream()
@@ -80,6 +94,12 @@ public class CategoryServiceImpl implements CategoryService {
 
         if (activeCategory.size() > 0) {
             throw new LBMSException(LBMSError.CATEGORY_EXISTS);
+        }
+    }
+
+    private void validateStatus(CategoryPatchRequest categoryPatchRequest) {
+        if (!Arrays.stream(CategoryStatus.values()).anyMatch(categoryStatus -> categoryStatus.getStatus().equals(categoryPatchRequest.getStatus()))) {
+            throw new LBMSException(LBMSError.INVALID_CATEGORY_STATUS);
         }
     }
 }

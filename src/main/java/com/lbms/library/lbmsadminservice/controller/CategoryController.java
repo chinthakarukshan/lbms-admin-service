@@ -3,6 +3,7 @@ package com.lbms.library.lbmsadminservice.controller;
 import com.lbms.library.core.dto.category.CategoryDTO;
 import com.lbms.library.core.dto.category.CategorySummaryDTO;
 import com.lbms.library.lbmsadminservice.dto.CategoryCreateRequest;
+import com.lbms.library.lbmsadminservice.dto.CategoryPatchRequest;
 import com.lbms.library.lbmsadminservice.service.CategoryService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -36,5 +37,13 @@ public class CategoryController {
         CategoryDTO categoryDTO = categoryService.getCategoryById(categoryId);
 
         return ResponseEntity.ok(categoryDTO);
+    }
+
+    @PatchMapping("/{categoryId}")
+    public ResponseEntity patchCategory(@PathVariable String categoryId, @Valid @RequestBody CategoryPatchRequest categoryPatchRequest) {
+        categoryService.patchCategory(categoryId, categoryPatchRequest);
+
+        return ResponseEntity.ok()
+                             .build();
     }
 }
