@@ -2,6 +2,7 @@ package com.lbms.library.lbmsadminservice.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lbms.library.core.dto.category.CategoryDTO;
 import com.lbms.library.core.dto.category.CategorySummaryDTO;
 import com.lbms.library.core.error.LBMSError;
 import com.lbms.library.core.exception.LBMSException;
@@ -115,5 +116,31 @@ public class CategoryControllerTest {
         mockMvc.perform(get("/category"))
                .andExpect(status().isOk())
                .andExpect(content().string(containsString("Novel")));
+    }
+
+    @Test
+    public void getCategoryById_Success() throws Exception {
+        CategoryDTO categoryDTO = new CategoryDTO();
+
+        categoryDTO.setId("1qaz2wsx3edc");
+        categoryDTO.setCategory("Novel");
+        categoryDTO.setCreatedBy("Admin");
+        categoryDTO.setCreatedDate(new Date());
+
+        when(categoryService.getCategoryById("1qaz2wsx3edc")).thenReturn(categoryDTO);
+
+        mockMvc.perform(get("/category/1qaz2wsx3edc"))
+               .andExpect(status().isOk())
+               .andExpect(content().string(containsString("1qaz2wsx3edc")));
+    }
+
+    @Test
+    public void getCategoryById_invalidCategoryId() throws Exception {
+
+        when(categoryService.getCategoryById("1qaz2wsx3edc")).thenThrow(new LBMSException(LBMSError.CATEGORY_WITH_ID_DOES_NOT_EXIST));
+
+        mockMvc.perform(get("/category/1qaz2wsx3edc"))
+               .andExpect(status().isBadRequest())
+               .andExpect(content().string(containsString(LBMSError.CATEGORY_WITH_ID_DOES_NOT_EXIST.getCode())));
     }
 }
