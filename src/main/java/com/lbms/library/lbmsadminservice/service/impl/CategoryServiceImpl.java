@@ -75,10 +75,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void patchCategory(String categoryId, CategoryPatchRequest categoryPatchRequest) {
-        checkCategoryExists(categoryId);
+        Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
+        if (optionalCategory.isEmpty()) {
+            throw new LBMSException(LBMSError.CATEGORY_WITH_ID_DOES_NOT_EXIST);
+        }
+
         validateStatus(categoryPatchRequest);
 
-        Category category = categoryRepository.findById(categoryId).get();
+        Category category = optionalCategory.get();
 
         category.setStatus(categoryPatchRequest.getStatus());
 
