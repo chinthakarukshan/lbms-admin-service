@@ -7,6 +7,8 @@ import com.lbms.library.core.dto.category.CategorySummaryDTO;
 import com.lbms.library.core.error.LBMSError;
 import com.lbms.library.core.exception.LBMSException;
 import com.lbms.library.lbmsadminservice.dto.CategoryCreateRequest;
+import com.lbms.library.lbmsadminservice.dto.CategoryPatchRequest;
+import com.lbms.library.lbmsadminservice.entity.nosql.Category;
 import com.lbms.library.lbmsadminservice.service.CategoryService;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -25,8 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -140,6 +141,43 @@ public class CategoryControllerTest {
         when(categoryService.getCategoryById("1qaz2wsx3edc")).thenThrow(new LBMSException(LBMSError.CATEGORY_WITH_ID_DOES_NOT_EXIST));
 
         mockMvc.perform(get("/category/1qaz2wsx3edc"))
+               .andExpect(status().isBadRequest())
+               .andExpect(content().string(containsString(LBMSError.CATEGORY_WITH_ID_DOES_NOT_EXIST.getCode())));
+    }
+
+    @Test
+    public void patchCategory_success() throws Exception {
+        CategoryPatchRequest categoryPatchRequest = new CategoryPatchRequest();
+        categoryPatchRequest.setStatus("Inactive");
+
+        Category patchCategory = new Category();
+        patchCategory.setId("1qaz2wsx3edc");
+        patchCategory.setStatus("Active");
+        patchCategory.setCategory("Non-Fiction");
+        patchCategory.setDescription("Non-fiction books");
+        patchCategory.setCreatedBy("Admin");
+        patchCategory.setCreatedDate(new Date());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String patchCategoryRequest = objectMapper.writeValueAsString(categoryPatchRequest);
+
+        mockMvc.perform(patch("/category/1qaz2wsx3edc").content(patchCategoryRequest))
+               .andExpect(status().isOk());
+    }
+
+    @Test
+    public void patchCategory_failure_invalidCategory() throws Exception {
+        CategoryPatchRequest categoryPatchRequest = new CategoryPatchRequest();
+        categoryPatchRequest.setStatus("Inactive");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String patchCategoryRequest = objectMapper.writeValueAsString(categoryPatchRequest);
+
+        doThrow(new LBMSException(LBMSError.CATEGORY_WITH_ID_DOES_NOT_EXIST)).when(categoryService)
+                                                                             .patchCategory(any(), any());
+
+        mockMvc.perform(patch("/category/1qaz2wsx3edc").content(patchCategoryRequest)
+                                                       .contentType(MediaType.APPLICATION_JSON))
                .andExpect(status().isBadRequest())
                .andExpect(content().string(containsString(LBMSError.CATEGORY_WITH_ID_DOES_NOT_EXIST.getCode())));
     }

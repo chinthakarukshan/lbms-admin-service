@@ -4,6 +4,7 @@ import com.lbms.library.core.dto.category.CategorySummaryDTO;
 import com.lbms.library.core.exception.LBMSException;
 import com.lbms.library.core.util.constant.CategoryStatus;
 import com.lbms.library.lbmsadminservice.dto.CategoryCreateRequest;
+import com.lbms.library.lbmsadminservice.dto.CategoryPatchRequest;
 import com.lbms.library.lbmsadminservice.entity.nosql.Category;
 import com.lbms.library.lbmsadminservice.repository.mongodb.CategoryRepository;
 import com.lbms.library.lbmsadminservice.service.CategoryService;
@@ -19,6 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -104,5 +106,35 @@ public class CategoryServiceImplTest {
         List<CategorySummaryDTO> categorySummaryDTOList = categoryServiceImpl.getCategoryList();
 
         assert(categorySummaryDTOList.size() == 3);
+    }
+
+    @Test
+    public void patchCategory_success() {
+        CategoryPatchRequest categoryPatchRequest = new CategoryPatchRequest();
+        categoryPatchRequest.setStatus("Inactive");
+
+        Category patchCategory = new Category();
+        patchCategory.setId("1qaz2wsx3edc");
+        patchCategory.setStatus("Active");
+        patchCategory.setCategory("Non-Fiction");
+        patchCategory.setDescription("Non-fiction books");
+        patchCategory.setCreatedBy("Admin");
+        patchCategory.setCreatedDate(new Date());
+
+        when(categoryRepository.findById("1qaz2wsx3edc")).thenReturn(Optional.of(patchCategory));
+
+        categoryServiceImpl.patchCategory("1qaz2wsx3edc",categoryPatchRequest);
+
+        verify(categoryRepository,times(1)).save(any(Category.class));
+    }
+
+    @Test
+    public void patchCategory_failure_invalidCategory() {
+        CategoryPatchRequest categoryPatchRequest = new CategoryPatchRequest();
+        categoryPatchRequest.setStatus("Inactive");
+
+        when(categoryRepository.findById("1qaz2wsx3edc")).thenReturn(Optional.ofNullable(null));
+
+        assertThrows(LBMSException.class,() -> categoryServiceImpl.patchCategory("1qaz2wsx3edc",categoryPatchRequest));
     }
 }
