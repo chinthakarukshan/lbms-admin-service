@@ -11,9 +11,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthorServiceImplTest {
@@ -33,5 +35,30 @@ public class AuthorServiceImplTest {
         authorServiceImpl.addAuthor(authorCreateRequest);
 
         verify(authorRepository, times(1)).save(any(Author.class));
+    }
+
+    @Test
+    public void getAuthorList_success() {
+        Author chinthaka = new Author();
+        chinthaka.setId("1");
+        chinthaka.setFirstName("Chinthaka");
+        chinthaka.setLastName("Weerakkody");
+
+        Author kanchana = new Author();
+        kanchana.setId("2");
+        kanchana.setFirstName("Kanchana");
+        kanchana.setLastName("Wijerathna");
+
+        List<Author> authorList = new ArrayList<>();
+        authorList.add(chinthaka);
+        authorList.add(kanchana);
+
+        when(authorRepository.findAll()).thenReturn(authorList);
+
+        List<Author> returnedAuthorList = authorRepository.findAll();
+
+        assert(returnedAuthorList.size() == authorList.size());
+
+
     }
 }
